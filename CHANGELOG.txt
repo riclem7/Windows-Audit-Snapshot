@@ -1,0 +1,2 @@
+v1.0: Release
+v1.1: Added a OpenReport function so user doesn't have to look for the report instantly
