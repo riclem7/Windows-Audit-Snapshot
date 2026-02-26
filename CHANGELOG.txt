@@ -1,2 +1,3 @@
 v1.0: Release
 v1.1: Added a OpenReport function so user doesn't have to look for the report instantly
+v1.2: Added disk usage snapshot for local fixed drives (JSON + report)
