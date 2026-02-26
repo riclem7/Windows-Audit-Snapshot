@@ -79,6 +79,16 @@ $failed = Safe {
     Select-Object TimeCreated, Id -First 20
 }
 
+#Disk usage: size, free, and used space per local drive
+$disks = Safe {
+  Get-CimInstance Win32_LogicalDisk -Filter "DriveType=3" | Select-Object DeviceID,
+      @{Name="Size_GB";  Expression={[math]::Round($_.Size / 1GB, 2)}},
+      @{Name="Free_GB";  Expression={[math]::Round($_.FreeSpace / 1GB, 2)}},
+      @{Name="Used_GB";  Expression={[math]::Round(($_.Size - $_.FreeSpace) / 1GB, 2)}},
+      @{Name="Used_Pct"; Expression={[math]::Round((($_.Size - $_.FreeSpace) / $_.Size) * 100, 1)}}
+}
+
+
 #-----------------------------
 #Package results into an object
 #-----------------------------
@@ -92,6 +102,7 @@ $audit = [ordered]@{
   Defender    = $def
   ListenPorts = $ports
   FailedLogonsLastHours = $failed
+  DiskUsage = $disks	
 }
 
 #-----------------------------
@@ -125,6 +136,11 @@ $($ports | Select-Object -First 15 | Out-String)
 
 Failed Logons (last $Hours hours, first 20):
 $($failed | Out-String)
+
+Disk Usage:
+$($disks | Out-String)
+
+
 "@ | Out-File (Join-Path $outPath "report.txt") -Encoding UTF8
 
 #Print where results were saved
